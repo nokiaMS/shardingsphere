@@ -23,6 +23,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.Postgr
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
+ * 密码认证包，要求客户端发送密码。
  * Password authentication (backend) packet for PostgreSQL.
  */
 public final class PostgreSQLPasswordAuthenticationPacket extends PostgreSQLIdentifierPacket {
@@ -33,7 +34,11 @@ public final class PostgreSQLPasswordAuthenticationPacket extends PostgreSQLIden
     protected void write(final PostgreSQLPacketPayload payload) {
         payload.writeInt4(AUTH_REQ_PASSWORD);
     }
-    
+
+    /**
+     * 返回消息包的表示信息，此处为R。
+     * @return
+     */
     @Override
     public PostgreSQLIdentifierTag getIdentifier() {
         return PostgreSQLMessagePacketType.AUTHENTICATION_REQUEST;

@@ -24,6 +24,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.Postgr
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
+ * md5密码认证包，要求客户端以md5形式发送密码。
  * MD5 password authentication (backend) packet for PostgreSQL.
  */
 @RequiredArgsConstructor

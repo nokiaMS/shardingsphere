@@ -21,17 +21,30 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
+ * 认证结果结构体。
  * Authentication result.
  */
 @RequiredArgsConstructor
 @Getter
 public final class AuthenticationResult {
-    
+
+    /**
+     * 用户名名称。
+     */
     private final String username;
-    
+
+    /**
+     * 主机地址名称。
+     */
     private final String hostname;
-    
+
+    /**
+     * 数据库名称。
+     */
     private final String database;
-    
+
+    /**
+     * 是否认证完成。
+     */
     private final boolean finished;
 }

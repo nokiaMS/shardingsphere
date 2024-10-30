@@ -47,30 +47,50 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     private final ConnectionSession connectionSession;
     
     private final ProcessEngine processEngine = new ProcessEngine();
-    
+
+    /**
+     * 是否需要进行客户端认证。
+     */
     private final AtomicBoolean authenticated = new AtomicBoolean(false);
     
     public FrontendChannelInboundHandler(final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine, final Channel channel) {
         this.databaseProtocolFrontendEngine = databaseProtocolFrontendEngine;
         connectionSession = new ConnectionSession(databaseProtocolFrontendEngine.getType(), channel);
     }
-    
+
+    /**
+     * 通道活跃时的触发函数（即tcp连接建立成功）
+     * @param context
+     */
     @Override
     public void channelActive(final ChannelHandlerContext context) {
         int connectionId = databaseProtocolFrontendEngine.getAuthenticationEngine().handshake(context);
         ConnectionThreadExecutorGroup.getInstance().register(connectionId);
         connectionSession.setConnectionId(connectionId);
     }
-    
+
+    /**
+     * 通道有待接收消息时的触发函数。
+     * @param context
+     * @param message
+     */
     @Override
     public void channelRead(final ChannelHandlerContext context, final Object message) {
+        //如果认证已经完成，那么开始命令执行过程，如果认证没有完成，那么执行认证过程。
         if (!authenticated.get()) {
             authenticated.set(authenticate(context, (ByteBuf) message));
             return;
         }
+        //命令执行过程。
         ProxyStateContext.execute(context, message, databaseProtocolFrontendEngine, connectionSession);
     }
-    
+
+    /**
+     * 客户端认证。
+     * @param context
+     * @param message
+     * @return
+     */
     private boolean authenticate(final ChannelHandlerContext context, final ByteBuf message) {
         try {
             AuthenticationResult authResult = databaseProtocolFrontendEngine.getAuthenticationEngine().authenticate(context,

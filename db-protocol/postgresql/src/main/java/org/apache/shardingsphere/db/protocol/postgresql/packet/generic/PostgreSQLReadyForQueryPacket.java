@@ -24,6 +24,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.Postgr
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
+ * ReadyForQuery报文。
  * Ready for query packet for PostgreSQL.
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)

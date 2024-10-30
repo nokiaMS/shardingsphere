@@ -23,6 +23,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.Postgr
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
+ * 认证ok包。
  * Authentication OK packet for PostgreSQL.
  */
 public final class PostgreSQLAuthenticationOKPacket extends PostgreSQLIdentifierPacket {

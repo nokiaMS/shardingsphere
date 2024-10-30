@@ -24,6 +24,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.Postgr
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
+ * 参数状态报文。
  * Parameter status packet for PostgreSQL.
  */
 @RequiredArgsConstructor

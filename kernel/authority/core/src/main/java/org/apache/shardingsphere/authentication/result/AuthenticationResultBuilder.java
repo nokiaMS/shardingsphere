@@ -27,6 +27,7 @@ import lombok.NoArgsConstructor;
 public final class AuthenticationResultBuilder {
     
     /**
+     * 创建结束认证结构体。
      * Create finished authentication result.
      *
      * @param username username
@@ -48,6 +49,7 @@ public final class AuthenticationResultBuilder {
     }
     
     /**
+     * 创建认证结果对象。
      * Create continued authentication result.
      *
      * @param username username
