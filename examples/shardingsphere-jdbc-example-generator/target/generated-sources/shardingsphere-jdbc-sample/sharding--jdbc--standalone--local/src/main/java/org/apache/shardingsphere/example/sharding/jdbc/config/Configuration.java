@@ -52,7 +52,12 @@ public final class Configuration {
     private static final String PASSWORD = "Aa12345!";
     
     public DataSource createDataSource() throws SQLException {
-        return ShardingSphereDataSourceFactory.createDataSource(createModeConfiguration(), createDataSourceMap(), createRuleConfiguration(), createProperties());
+        return ShardingSphereDataSourceFactory.createDataSource(
+                createModeConfiguration(),
+                createDataSourceMap(),
+                createRuleConfiguration(),
+                createProperties()
+        );
     }
     
     private static ModeConfiguration createModeConfiguration() {
