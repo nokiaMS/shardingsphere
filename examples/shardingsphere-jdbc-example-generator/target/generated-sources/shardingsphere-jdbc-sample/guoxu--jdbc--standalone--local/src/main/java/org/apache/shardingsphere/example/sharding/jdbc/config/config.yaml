@@ -1,0 +1,92 @@
+#配置模式：standalone单机模式，cluster集群模式。
+mode:
+  type: Standalone
+  repository:
+      type: JDBC  #默认元数据存储在内存中，设置了jdbc之后，默认存储在数据库实例中，如果没有显式配置数据库，那么复用业务数据库。
+
+#物理数据源配置，此处定义了三个数据源。
+dataSources:
+  ds_0:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    jdbcUrl: jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
+    username: guoxu
+    password: Aa12345!
+  ds_1:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    jdbcUrl: jdbc:mysql://127.0.0.1:3306/demo_ds_1?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
+    username: guoxu
+    password: Aa12345!
+  ds_2:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    jdbcUrl: jdbc:mysql://127.0.0.1:3306/demo_ds_2?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
+    username: guoxu
+    password: Aa12345!
+
+#规则配置。
+rules:
+  # - 表示当前行是数组/列表的一个元素。rules节点本身是一个规则列表(支持同时配置分片，广播，影子库，加密等多种规则)
+  # - !SHARDING 表示这是规则列表中的第一个规则项，类型为分片规则。
+  # ！是yaml中的标签(tag)语法，用于显式指定数据类型/规则类型；SHARDING是shardingsphere内置的规则类型标识，代表分库分表规则。
+  - !SHARDING
+    tables: # 指定需要分片的表。
+      t_order:  # 第一个需要分片的表名称，是个逻辑表。
+        actualDataNodes: ds_$->{0..1}.t_order_$->{0..1}  # 指定表的物理数据节点，即 真实存在的 库+表。
+        tableStrategy: # 表分片策略。
+          standard:
+            shardingColumn: order_id  # 分片列。
+            shardingAlgorithmName: t_order_inline  # 分片算法名称，关联下方定义的 t_order_inline 算法。
+        keyGenerateStrategy:
+          column: order_id
+          keyGeneratorName: snowflake_generator
+      t_order_item:  # 第二个需要分片的表，是一个逻辑表。
+        actualDataNodes: ds_$->{0..1}.t_order_item_$->{0..1}
+        tableStrategy:  # 表分片策略。
+          standard:
+            shardingColumn: order_id
+            shardingAlgorithmName: t_order_item_inline
+        keyGenerateStrategy:
+          column: order_item_id
+          keyGeneratorName: snowflake_generator
+    # bindingTables:
+    #  - t_order, t_order_item
+    # 默认的数据库片分片算法，如果没有另行指定，则使用此算法。
+    defaultDatabaseStrategy:
+      standard:
+        shardingColumn: user_id  # 分片列。
+        shardingAlgorithmName: database_inline  # 指定了自定义的数据库分片算法。
+
+    # 定义了各种分片算法。
+    shardingAlgorithms:
+      database_inline:
+        type: INLINE
+        props:
+          algorithm-expression: ds_${user_id % 2}
+
+      # 定义的分片算法。
+      t_order_inline:
+        type: INLINE
+        props:
+          algorithm-expression: t_order_$->{order_id % 2}
+      t_order_item_inline:
+        type: INLINE
+        props:
+          algorithm-expression: t_order_item_$->{order_id % 2}
+    keyGenerators:
+      snowflake_generator:
+        type: SNOWFLAKE
+
+  # 设置广播表。
+  - !BROADCAST
+    tables:
+      - t_address
+
+  # 设置单表。
+  - !SINGLE
+    tables:
+      - ds_0.t_single
+    defaultDataSource: ds_0
+props:
+  sql-show: true
